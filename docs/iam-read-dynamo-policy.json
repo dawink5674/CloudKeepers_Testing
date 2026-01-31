@@ -1,0 +1,16 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowQueryOnEventsTableAndRecentIndex",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:Query"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:us-east-1:850104385746:table/honeylambda-events",
+        "arn:aws:dynamodb:us-east-1:850104385746:table/honeylambda-events/index/gsi_recent"
+      ]
+    }
+  ]
+}
