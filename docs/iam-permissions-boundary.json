@@ -1,0 +1,94 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowProjectServices",
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:*",
+        "lambda:*",
+        "dynamodb:*",
+        "sns:*",
+        "logs:*",
+        "cloudwatch:*",
+        "cognito-idp:*",
+        "amplify:*",
+        "s3:ListAllMyBuckets",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowScopedS3ForArtifacts",
+      "Effect": "Allow",
+      "Action": [
+        "s3:CreateBucket",
+        "s3:ListBucket",
+        "s3:GetBucketLocation",
+        "s3:PutBucketVersioning",
+        "s3:PutEncryptionConfiguration",
+        "s3:PutBucketPublicAccessBlock",
+        "s3:PutBucketTagging",
+        "s3:GetBucketTagging",
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject",
+        "s3:AbortMultipartUpload"
+      ],
+      "Resource": [
+        "arn:aws:s3:::honeylambda-*",
+        "arn:aws:s3:::honeylambda-*/*"
+      ]
+    },
+    {
+      "Sid": "AllowPassRoleOnlyForProjectRoles",
+      "Effect": "Allow",
+      "Action": [
+        "iam:PassRole",
+        "iam:GetRole",
+        "iam:ListRoles"
+      ],
+      "Resource": "arn:aws:iam::*:role/honeylambda-*"
+    },
+    {
+      "Sid": "DenyIamAdministration",
+      "Effect": "Deny",
+      "Action": [
+        "iam:*",
+        "organizations:*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DenyHighCostServices",
+      "Effect": "Deny",
+      "Action": [
+        "ec2:*",
+        "autoscaling:*",
+        "elasticloadbalancing:*",
+        "rds:*",
+        "redshift:*",
+        "opensearch:*",
+        "es:*",
+        "elasticache:*",
+        "elasticmapreduce:*",
+        "eks:*",
+        "ecs:*",
+        "ecr:*",
+        "sagemaker:*",
+        "glue:*",
+        "athena:*",
+        "kinesis:*",
+        "firehose:*",
+        "route53:*",
+        "cloudfront:*",
+        "wafv2:*",
+        "shield:*",
+        "backup:*",
+        "transfer:*",
+        "mq:*"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

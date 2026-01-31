@@ -1,0 +1,57 @@
+Honey-Lambda Baseline Status and Next Steps (Jan 27, 2026)
+
+What is already done (AWS + repo):
+- DynamoDB table: honeylambda-events (on-demand) with TTL on ttl_epoch
+- DynamoDB GSI: gsi_recent (gsi_pk HASH, ts_epoch RANGE)
+- SNS alert topic: arn:aws:sns:us-east-1:850104385746:honeylambda-alerts
+- HTTP API v2 base URL: https://zpq4f8c459.execute-api.us-east-1.amazonaws.com
+  - Ingest routes: ANY / and ANY /{proxy+}
+  - Read route: GET /events/recent
+- Lambdas:
+  - honeylambda-ingest: captures request, GeoIP, detection, scoring, writes to DynamoDB, alerts on high/critical
+  - honeylambda-read: queries recent events via gsi_recent
+
+Important note:
+- Only NEW events will appear in /events/recent because older items do not have gsi_pk="recent".
+
+Quick test commands:
+1) Send a test attack:
+   curl -X POST "https://zpq4f8c459.execute-api.us-east-1.amazonaws.com/test" -H "Content-Type: application/x-www-form-urlencoded" --data "q=<script>alert(1)</script>&x=' OR 1=1; cat /etc/passwd"
+2) Read recent events:
+   curl "https://zpq4f8c459.execute-api.us-east-1.amazonaws.com/events/recent?window_seconds=3600&limit=20"
+
+What each person should do next:
+
+Josh (infra/security):
+- Subscribe email to SNS alerts and confirm:
+  aws sns subscribe --topic-arn arn:aws:sns:us-east-1:850104385746:honeylambda-alerts --protocol email --notification-endpoint YOUR_EMAIL@domain.com --region us-east-1 --profile thecloudkeepers
+- Add API access logs + throttling in API Gateway (console is fine).
+- Plan a future schema improvement for map queries (e.g., day-bucketed partitions) if needed.
+
+Nolan (detection logic):
+- Improve/organize signatures and scoring in lambda/ingest/handler.py.
+- Add tests locally for rules + score thresholds (do not deploy test-only code to Lambda).
+- Add fields that help detection analysis (e.g., rule categories, confidence).
+
+Colin (frontend/map):
+- Poll GET /events/recent every ~5 seconds.
+- Use only safe fields for the UI: geo.lat, geo.lon, severity, attack_type, ts_epoch.
+- Do not render raw body_raw/headers as HTML.
+
+Git workflow (everyone):
+- Before starting work:
+  git checkout main
+  git pull origin main
+- After changes:
+  git add .
+  git commit -m "Your message"
+  git push origin main
+
+How to get the latest after someone else pushes:
+- git pull origin main
+
+If you want Josh to review what others pushed:
+- Share the commit hash or branch name, then run:
+  git fetch origin
+  git log --oneline origin/main -n 10
+  git show <commit_hash>

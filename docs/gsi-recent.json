@@ -1,0 +1,25 @@
+[
+  {
+    "Create": {
+      "IndexName": "gsi_recent",
+      "KeySchema": [
+        {"AttributeName": "gsi_pk", "KeyType": "HASH"},
+        {"AttributeName": "ts_epoch", "KeyType": "RANGE"}
+      ],
+      "Projection": {
+        "ProjectionType": "INCLUDE",
+        "NonKeyAttributes": [
+          "severity",
+          "attack_type",
+          "geo",
+          "threat_score",
+          "source_ip",
+          "path",
+          "method",
+          "user_agent",
+          "detections"
+        ]
+      }
+    }
+  }
+]
